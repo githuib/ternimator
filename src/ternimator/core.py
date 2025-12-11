@@ -14,21 +14,17 @@ type Animation = Callable[[Lines, int, int], Lines]
 
 
 @dataclass(frozen=True)
-class AnimParams:
+class AnimParams[T]:
+    format_item: Callable[[T], Lines] | None = None
     fps: int | None = None
     keep_last: bool = True
     only_every_nth: int = 1
     crop_to_terminal: bool = False
 
 
-def animate_iter[T](
-    items: Iterator[T],
-    *,
-    format_item: Callable[[T], Lines] = None,
-    params: AnimParams = None,
-) -> Iterator[T]:
+def animate_iter[T](items: Iterator[T], params: AnimParams = None) -> Iterator[T]:
     if params is None:
-        params = AnimParams()
+        params = AnimParams[T]()
     crop = params.crop_to_terminal
 
     with suppress(KeyboardInterrupt):
@@ -38,19 +34,15 @@ def animate_iter[T](
             if i % params.only_every_nth == 0:
                 # The cast here is somewhat sketchy, but I can't think of a better way
                 # to "do nothing" by default (and that mypy would be ok with).
-                lines = list(format_item(item) if format_item else cast("Lines", item))
+                fmt = params.format_item
+                lines = list(fmt(item) if fmt else cast("Lines", item))
                 refresh_lines(lines, fps=params.fps, crop_to_terminal=crop)
         if params.keep_last:
             write_lines(lines, crop_to_terminal=crop)
 
 
-def animate[T](
-    items: Iterator[T],
-    *,
-    format_item: Callable[[T], Lines] | None = None,
-    params: AnimParams = None,
-) -> None:
-    consume(animate_iter(items, format_item=format_item, params=params))
+def animate[T](items: Iterator[T], params: AnimParams[T] = None) -> None:
+    consume(animate_iter(items, params=params))
 
 
 def animated_lines(
