@@ -2,22 +2,20 @@ from . import animators
 from .utils import (
     Animation,
     AnimParams,
-    LazyItems,
     Lines,
     animate,
     animate_iter,
-    animated,
+    animated_lines,
     consume,
 )
 
 __all__ = [
     "AnimParams",
     "Animation",
-    "LazyItems",
     "Lines",
     "animate",
     "animate_iter",
-    "animated",
+    "animated_lines",
     "animators",
     "consume",
 ]

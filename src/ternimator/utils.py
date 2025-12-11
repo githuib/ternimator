@@ -18,7 +18,6 @@ if TYPE_CHECKING:
 
 type Lines = Iterable[str]
 type Animation = Callable[[Lines, int, int], Lines]
-type LazyItems[T] = Callable[[], Iterable[T]]
 
 
 @dataclass(frozen=True)
@@ -78,7 +77,7 @@ def refresh_lines(
 
 
 def animate_iter[T](
-    items: LazyItems[T],
+    items: Iterator[T],
     format_item: Callable[[T], Lines] | None = None,
     *,
     params: AnimParams = None,
@@ -96,7 +95,7 @@ def animate_iter[T](
 
     with suppress(KeyboardInterrupt):
         lines: Lines = []
-        for i, item in enumerate(items()):
+        for i, item in enumerate(items):
             yield item
             if i % params.only_every_nth == 0:
                 lines = list(to_lines(item))
@@ -106,7 +105,7 @@ def animate_iter[T](
 
 
 def animate[T](
-    items: LazyItems[T],
+    items: Iterator[T],
     format_item: Callable[[T], Lines] | None = None,
     *,
     params: AnimParams = None,
@@ -114,29 +113,26 @@ def animate[T](
     consume(animate_iter(items, format_item, params=params))
 
 
-def animated(
+def animated_lines(
     lines: Lines, *animations: Animation, num_frames: int = None, fill_char: str = " "
-) -> Callable[[], Iterator[Lines]]:
-    def func() -> Iterator[Lines]:
-        max_width, max_height = get_terminal_size()
-        n_frames = max_width if num_frames is None else num_frames
+) -> Iterator[Lines]:
+    max_width, max_height = get_terminal_size()
+    n_frames = max_width if num_frames is None else num_frames
 
-        block = list(lines)
-        height = min(len(block), max_height - 1)
-        block = block[-height:]
-        block_width = max(len(line) for line in block)
+    block = list(lines)
+    height = min(len(block), max_height - 1)
+    block = block[-height:]
+    block_width = max(len(line) for line in block)
 
-        def frame_0() -> Lines:
-            for line in block:
-                yield line.ljust(block_width, fill_char).center(max_width, fill_char)
+    def frame_0() -> Lines:
+        for line in block:
+            yield line.ljust(block_width, fill_char).center(max_width, fill_char)
 
-        def frame_(n: int) -> Callable[[Lines, Animation], Lines]:
-            def anim(frame: Lines, a: Animation) -> Lines:
-                return a(frame, n, n_frames)
+    def frame_(n: int) -> Callable[[Lines, Animation], Lines]:
+        def anim(frame: Lines, a: Animation) -> Lines:
+            return a(frame, n, n_frames)
 
-            return anim
+        return anim
 
-        for f in count():
-            yield reduce(frame_(f), animations, frame_0())
-
-    return func
+    for f in count():
+        yield reduce(frame_(f), animations, frame_0())
