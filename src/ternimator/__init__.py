@@ -1,4 +1,23 @@
 from . import animators
-from .utils import AnimParams, animate, animate_iter, animated, consume
+from .utils import (
+    Animation,
+    AnimParams,
+    LazyItems,
+    Lines,
+    animate,
+    animate_iter,
+    animated,
+    consume,
+)
 
-__all__ = ["AnimParams", "animate", "animate_iter", "animated", "animators", "consume"]
+__all__ = [
+    "AnimParams",
+    "Animation",
+    "LazyItems",
+    "Lines",
+    "animate",
+    "animate_iter",
+    "animated",
+    "animators",
+    "consume",
+]
