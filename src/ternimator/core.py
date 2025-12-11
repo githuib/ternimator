@@ -10,7 +10,7 @@ from .utils import Lines, consume, refresh_lines, write_lines
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
 
-type Animation = Callable[[Lines, int, int], Lines]
+type Animation = Callable[[Lines, int], Lines]
 
 
 @dataclass(frozen=True)
@@ -46,10 +46,9 @@ def animate[T](items: Iterator[T], params: AnimParams[T] = None) -> None:
 
 
 def animated_lines(
-    lines: Lines, *animations: Animation, num_frames: int = None, fill_char: str = " "
+    lines: Lines, *animations: Animation, fill_char: str = " "
 ) -> Iterator[Lines]:
     max_width, max_height = get_terminal_size()
-    n_frames = max_width if num_frames is None else num_frames
 
     block = list(lines)
     height = min(len(block), max_height - 1)
@@ -62,7 +61,7 @@ def animated_lines(
 
     def frame_(n: int) -> Callable[[Lines, Animation], Lines]:
         def anim(frame: Lines, a: Animation) -> Lines:
-            return a(frame, n, n_frames)
+            return a(frame, n)
 
         return anim
 

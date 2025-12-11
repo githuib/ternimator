@@ -1,4 +1,4 @@
-from . import animators
+from . import animations
 from .core import Animation, AnimParams, animate, animate_iter, animated_lines
 from .utils import Lines, consume
 
@@ -9,6 +9,6 @@ __all__ = [
     "animate",
     "animate_iter",
     "animated_lines",
-    "animators",
+    "animations",
     "consume",
 ]

@@ -1,3 +1,4 @@
+from os import get_terminal_size
 from typing import TYPE_CHECKING
 
 from kleur import Color, Colored
@@ -11,26 +12,40 @@ if TYPE_CHECKING:
     from .utils import Lines
 
 
-def moving_forward(frame_0: Lines, n: int, n_frames: int) -> Lines:
-    n %= n_frames
-    for line in frame_0:
-        yield line[-n:] + line[:-n]
+def _fixed_length(lines: Animation, n_frames: int = None) -> Animation:
+    if not n_frames:
+        n_frames, _max_height = get_terminal_size()
+
+    def anim(frame_0: Lines, n: int) -> Lines:
+        yield from lines(frame_0, n % n_frames)
+
+    return anim
 
 
-def fuck_me_sideways(frame_0: Lines, n: int, n_frames: int) -> Lines:
-    n %= n_frames
-    lines = list(frame_0)
-    height = len(lines) - 1
-    half_height = height // 2
-    for y, line in enumerate(lines):
-        x = n * (half_height - ((half_height + y) % height))
-        yield line[x:] + line[:x]
+def moving_forward(n_frames: int = None) -> Animation:
+    def lines(frame_0: Lines, n: int) -> Lines:
+        for line in frame_0:
+            yield line[-n:] + line[:-n]
+
+    return _fixed_length(lines, n_frames)
+
+
+def fuck_me_sideways(n_frames: int = None) -> Animation:
+    def lines(frame_0: Lines, n: int) -> Lines:
+        lines = list(frame_0)
+        height = len(lines) - 1
+        half_height = height // 2
+        for y, line in enumerate(lines):
+            x = n * (half_height - ((half_height + y) % height))
+            yield line[x:] + line[:x]
+
+    return _fixed_length(lines, n_frames)
 
 
 def _colorful(
-    colors: Callable[[float, float], tuple[Color, Color]], *, amount_of_hues: int = 360
+    colors: Callable[[float, float], tuple[Color, Color]], amount_of_hues: int = 360
 ) -> Animation:
-    def anim(frame_0: Lines, n: int, _n_frames: int) -> Lines:
+    def anim(frame_0: Lines, n: int) -> Lines:
         hue = n / amount_of_hues
         fg, bg = colors(n, hue)
         for line in frame_0:
@@ -45,7 +60,7 @@ def changing_colors(*, amount_of_hues: int = 360) -> Animation:
         bg = fg.contrasting_hue.contrasting_shade
         return fg, bg
 
-    return _colorful(colors, amount_of_hues=amount_of_hues)
+    return _colorful(colors, amount_of_hues)
 
 
 def flashing(
@@ -65,4 +80,4 @@ def flashing(
             c_fg, c_bg = c_flash.shade(0.3), c_flash.shade(0.8)
         return c_fg, c_bg
 
-    return _colorful(colors, amount_of_hues=amount_of_hues)
+    return _colorful(colors, amount_of_hues)
