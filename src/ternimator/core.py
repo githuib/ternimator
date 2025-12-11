@@ -23,6 +23,7 @@ class AnimParams:
 
 def animate_iter[T](
     items: Iterator[T],
+    *,
     format_item: Callable[[T], Lines] = None,
     params: AnimParams = None,
 ) -> Iterator[T]:
@@ -45,10 +46,11 @@ def animate_iter[T](
 
 def animate[T](
     items: Iterator[T],
+    *,
     format_item: Callable[[T], Lines] | None = None,
     params: AnimParams = None,
 ) -> None:
-    consume(animate_iter(items, format_item, params=params))
+    consume(animate_iter(items, format_item=format_item, params=params))
 
 
 def animated_lines(
