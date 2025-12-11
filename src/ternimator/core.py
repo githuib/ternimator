@@ -49,21 +49,17 @@ def animated_lines(
     lines: Lines, *animations: Animation, fill_char: str = " "
 ) -> Iterator[Lines]:
     max_width, max_height = get_terminal_size()
-
     block = list(lines)
-    height = min(len(block), max_height - 1)
-    block = block[-height:]
-    block_width = max(len(line) for line in block)
+    block = block[-min(len(block), max_height - 1) :]
+    w = max(len(line) for line in block)
 
-    def frame_0() -> Lines:
-        for line in block:
-            yield line.ljust(block_width, fill_char).center(max_width, fill_char)
+    frame_0 = [line.ljust(w, fill_char).center(max_width, fill_char) for line in block]
 
-    def frame_(n: int) -> Callable[[Lines, Animation], Lines]:
-        def anim(frame: Lines, a: Animation) -> Lines:
-            return a(frame, n)
+    def frame(n: int) -> Callable[[Lines, Animation], Lines]:
+        def apply(f: Lines, anim: Animation) -> Lines:
+            return anim(f, n)
 
-        return anim
+        return apply
 
-    for f in count():
-        yield reduce(frame_(f), animations, frame_0())
+    for n in count():
+        yield reduce(frame(n), animations, frame_0)
