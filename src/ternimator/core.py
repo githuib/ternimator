@@ -1,0 +1,76 @@
+from contextlib import suppress
+from dataclasses import dataclass
+from functools import reduce
+from itertools import count
+from os import get_terminal_size
+from typing import TYPE_CHECKING, cast
+
+from .utils import Lines, consume, refresh_lines, write_lines
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterator
+
+type Animation = Callable[[Lines, int, int], Lines]
+
+
+@dataclass(frozen=True)
+class AnimParams:
+    fps: int | None = None
+    keep_last: bool = True
+    only_every_nth: int = 1
+    crop_to_terminal: bool = False
+
+
+def animate_iter[T](
+    items: Iterator[T],
+    format_item: Callable[[T], Lines] = None,
+    params: AnimParams = None,
+) -> Iterator[T]:
+    if params is None:
+        params = AnimParams()
+    crop = params.crop_to_terminal
+
+    with suppress(KeyboardInterrupt):
+        lines: Lines = []
+        for i, item in enumerate(items):
+            yield item
+            if i % params.only_every_nth == 0:
+                # The cast here is somewhat sketchy, but I can't think of a better way
+                # to "do nothing" by default (and that mypy would be ok with).
+                lines = list(format_item(item) if format_item else cast("Lines", item))
+                refresh_lines(lines, fps=params.fps, crop_to_terminal=crop)
+        if params.keep_last:
+            write_lines(lines, crop_to_terminal=crop)
+
+
+def animate[T](
+    items: Iterator[T],
+    format_item: Callable[[T], Lines] | None = None,
+    params: AnimParams = None,
+) -> None:
+    consume(animate_iter(items, format_item, params=params))
+
+
+def animated_lines(
+    lines: Lines, *animations: Animation, num_frames: int = None, fill_char: str = " "
+) -> Iterator[Lines]:
+    max_width, max_height = get_terminal_size()
+    n_frames = max_width if num_frames is None else num_frames
+
+    block = list(lines)
+    height = min(len(block), max_height - 1)
+    block = block[-height:]
+    block_width = max(len(line) for line in block)
+
+    def frame_0() -> Lines:
+        for line in block:
+            yield line.ljust(block_width, fill_char).center(max_width, fill_char)
+
+    def frame_(n: int) -> Callable[[Lines, Animation], Lines]:
+        def anim(frame: Lines, a: Animation) -> Lines:
+            return a(frame, n, n_frames)
+
+        return anim
+
+    for f in count():
+        yield reduce(frame_(f), animations, frame_0())

@@ -7,7 +7,8 @@ from .utils import randf
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from .utils import Animation, Lines
+    from .core import Animation
+    from .utils import Lines
 
 
 def moving_forward(frame_0: Lines, n: int, n_frames: int) -> Lines:
