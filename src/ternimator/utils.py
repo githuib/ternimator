@@ -36,8 +36,8 @@ def randf(exclusive_upper_bound: float = 1, precision: int = 8) -> float:
     return randbelow(epb) * exclusive_upper_bound / epb
 
 
-def write_lines(lines: Lines, *, crop_to_terminal: bool = False) -> int:
-    block = list(lines)
+def write_lines(lines: Iterable, *, crop_to_terminal: bool = False) -> int:
+    block = [str(line) for line in lines]
     height = len(block)
     if crop_to_terminal:
         # Could be nice to crop to width as well, but it seems
@@ -55,7 +55,7 @@ def clear_lines(amount: int) -> None:
 
 
 def refresh_lines(
-    lines: Lines, *, fps: float = None, crop_to_terminal: bool = False
+    lines: Iterable, *, fps: float = None, crop_to_terminal: bool = False
 ) -> None:
     lines_written = write_lines(lines, crop_to_terminal=crop_to_terminal)
     if fps:
