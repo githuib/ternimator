@@ -12,26 +12,26 @@ if TYPE_CHECKING:
     from .utils import Lines
 
 
-def _fixed_length(lines: Animation, n_frames: int = None) -> Animation:
+def _fixed_length(anim: Animation, n_frames: int = None) -> Animation:
     if not n_frames:
         n_frames, _max_height = get_terminal_size()
 
-    def anim(frame_0: Lines, n: int) -> Lines:
-        yield from lines(frame_0, n % n_frames)
+    def wrapped_anim(frame_0: Lines, n: int) -> Lines:
+        yield from anim(frame_0, n % n_frames)
 
-    return anim
+    return wrapped_anim
 
 
 def moving_forward(n_frames: int = None) -> Animation:
-    def lines(frame_0: Lines, n: int) -> Lines:
+    def anim(frame_0: Lines, n: int) -> Lines:
         for line in frame_0:
             yield line[-n:] + line[:-n]
 
-    return _fixed_length(lines, n_frames)
+    return _fixed_length(anim, n_frames)
 
 
 def fuck_me_sideways(n_frames: int = None) -> Animation:
-    def lines(frame_0: Lines, n: int) -> Lines:
+    def anim(frame_0: Lines, n: int) -> Lines:
         lines = list(frame_0)
         height = len(lines) - 1
         half_height = height // 2
@@ -39,7 +39,7 @@ def fuck_me_sideways(n_frames: int = None) -> Animation:
             x = n * (half_height - ((half_height + y) % height))
             yield line[x:] + line[:x]
 
-    return _fixed_length(lines, n_frames)
+    return _fixed_length(anim, n_frames)
 
 
 def _colorful(

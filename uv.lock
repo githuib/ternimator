@@ -50,14 +50,14 @@ wheels = [
 
 [[package]]
 name = "kleur"
-version = "1.3.4"
+version = "1.3.18"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "hsluv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/74/16/7749932517e945deef0b12531a627ffb91f15a96355c6ba077f606ce0bef/kleur-1.3.4.tar.gz", hash = "sha256:69f35c5775a439f89fba8c46d79f8cd26b7ba2ee97a5afcb2a4648929e990f91", size = 9152, upload-time = "2025-12-16T00:22:05.024Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ed/41/f2e60bbf5cf8258ced3da9b921055885a90fe7070b321a768098a35afb84/kleur-1.3.18.tar.gz", hash = "sha256:fdb0a6a32ff9c70ba5ee4806b060410a4f35509cfe3b1f008475d39baeab1bdd", size = 9877, upload-time = "2025-12-17T20:09:25.408Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/72/fe/4f4b422d86f9fb9d5cb5727ed1add71ff2dc77809d4abddebce044967da6/kleur-1.3.4-py3-none-any.whl", hash = "sha256:53194ea959febcdfe42d08e162ea9a166737090b8c520f593368f93b5c06bc13", size = 10125, upload-time = "2025-12-16T00:22:03.56Z" },
+    { url = "https://files.pythonhosted.org/packages/ae/f6/96c3b67b628f241448265101365bfdad91139656e41bf11800e1b5231dda/kleur-1.3.18-py3-none-any.whl", hash = "sha256:4401f42adb3c8a7d0fb79c64547b82ad7f4684f85a6f76c2a3a763559bb8f04a", size = 10859, upload-time = "2025-12-17T20:09:24.078Z" },
 ]
 
 [[package]]
