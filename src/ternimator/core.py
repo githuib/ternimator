@@ -56,8 +56,11 @@ def animate[T](items: Iterator[T], params: AnimParams[T] = None) -> None:
 
 
 def animated_lines(
-    lines: Lines, *animations: Animation, fill_char: str = " "
+    lines: Lines | str, *animations: Animation, fill_char: str = " "
 ) -> Iterator[Lines]:
+    if isinstance(lines, str):
+        lines = lines.splitlines()
+
     max_width, max_height = get_terminal_size()
     block = list(lines)
     block = block[-min(len(block), max_height - 1) :]
