@@ -1,15 +1,15 @@
 from os import get_terminal_size
 from typing import TYPE_CHECKING
 
+from based_utils.math import randf
 from kleur import Color, Colored
-
-from .utils import randf
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from based_utils.cli import Lines
+
     from .core import Animation
-    from .utils import Lines
 
 
 def _fixed_length(anim: Animation, n_frames: int = None) -> Animation:
@@ -46,9 +46,9 @@ def _colorful(
     colors: Callable[[float, float], tuple[Color, Color]], amount_of_hues: int = 360
 ) -> Animation:
     def anim(frame_0: Lines, n: int) -> Lines:
-        fg, bg = colors(n, n / amount_of_hues)
+        c = Colored(*colors(n, n / amount_of_hues))
         for line in frame_0:
-            yield Colored(line, fg, bg)
+            yield c(line)
 
     return anim
 

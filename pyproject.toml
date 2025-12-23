@@ -18,6 +18,7 @@ classifiers = [
   "Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
+  "based-utils[cli]",
   "kleur",
 ]
 
@@ -29,6 +30,11 @@ dev = [
 #  "pytest",
   "ruff",
 ]
+
+#[tool.uv.sources]
+#based-utils = { path = "../based-utils", editable = true }
+#powerchord = { path = "../powerchord", editable = true }
+#kleur = { path = "../kleur", editable = true }
 
 [project.urls]
 PyPI = "https://pypi.org/project/ternimator/"
