@@ -5,8 +5,8 @@ from itertools import count
 from os import get_terminal_size
 from typing import TYPE_CHECKING, NamedTuple
 
-from based_utils import consume
 from based_utils.cli import Lines, refresh_lines, write_lines
+from based_utils.data import consume
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
