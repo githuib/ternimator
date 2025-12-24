@@ -92,10 +92,10 @@ def animated_lines(
     frame_0 = [line.ljust(w, fill_char).center(max_width, fill_char) for line in block]
 
     def frame(n: int) -> Callable[[Lines, Animation], Lines]:
-        def apply(f: Lines, anim: Animation) -> Lines:
+        def wrapped(f: Lines, anim: Animation) -> Lines:
             return anim(f, n)
 
-        return apply
+        return wrapped
 
     for n in count():
         yield reduce(frame(n), animations, frame_0)
