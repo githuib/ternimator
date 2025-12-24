@@ -1,15 +1,17 @@
 from collections.abc import Iterable
-from contextlib import suppress
 from functools import reduce
 from itertools import count
 from os import get_terminal_size
 from typing import TYPE_CHECKING, NamedTuple
 
-from based_utils.cli import Lines, refresh_lines, write_lines
+from based_utils.cli import Lines, clear_lines, refresh_lines, write_lines
 from based_utils.data import consume
+from pynput import keyboard
+from pynput.keyboard import Key, KeyCode
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
+
 
 type Animation = Callable[[Lines, int], Lines]
 
@@ -18,6 +20,7 @@ class AnimParams[T](NamedTuple):
     format_item: Callable[[T], Lines] | None = None
     fps: int | None = None
     keep_last: bool = True
+    loop: bool = False
     only_every_nth: int = 1
     crop_to_terminal: bool = False
 
@@ -27,29 +30,42 @@ class InvalidAnimationItemError(Exception):
         super().__init__(f"Cannot animate item (when no formatter is given): {item}")
 
 
+STOP_ANIMATION = object()
+
+
 def animate_iter[T](items: Iterator[T], params: AnimParams[T] = None) -> Iterator[T]:
-    if params is None:
-        params = AnimParams()
-    format_item, fps, keep_last, only_every_nth, crop_to_term = params
+    fmt_item, fps, keep_last, loop, only_every_nth, crop = params or AnimParams()
 
-    with suppress(KeyboardInterrupt):
-        lines = []
-        for i, item in enumerate(items):
-            yield item
-            if i % only_every_nth > 0:
-                continue
+    lines: list[object] = []
+    interrupted: list[object] = []
 
-            if format_item:
-                formatted = format_item(item)
-            elif isinstance(item, Iterable):
-                formatted = item
-            else:
-                raise InvalidAnimationItemError(item)
-            lines = list(formatted)
-            refresh_lines(lines, fps=fps, crop_to_terminal=crop_to_term)
+    def on_release(key: Key | KeyCode | None) -> None:
+        if key == Key.esc:
+            interrupted.append(STOP_ANIMATION)
 
-        if keep_last:
-            write_lines(lines, crop_to_terminal=crop_to_term)
+    keyboard.Listener(on_release=on_release, suppress=True).start()
+
+    for i, item in enumerate(items):
+        yield item
+        if interrupted:
+            if loop:
+                clear_lines(len(lines))
+                break
+            continue
+        if i % only_every_nth > 0:
+            continue
+
+        if fmt_item:
+            formatted = fmt_item(item)
+        elif isinstance(item, Iterable):
+            formatted = item
+        else:
+            raise InvalidAnimationItemError(item)
+        lines = list(formatted)
+        refresh_lines(lines, fps=fps, crop_to_terminal=crop)
+
+    if keep_last and not interrupted:
+        write_lines(lines, crop_to_terminal=crop)
 
 
 def animate[T](items: Iterator[T], params: AnimParams[T] = None) -> None:

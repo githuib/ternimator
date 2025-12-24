@@ -19,6 +19,7 @@ classifiers = [
 ]
 dependencies = [
   "based-utils",
+  "pynput",
   "kleur",
 ]
 
@@ -29,6 +30,7 @@ dev = [
   "pre-commit",
 #  "pytest",
   "ruff",
+  "types-pynput",
 ]
 
 #[tool.uv.sources]
