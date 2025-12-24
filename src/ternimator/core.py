@@ -4,7 +4,8 @@ from itertools import count
 from os import get_terminal_size
 from typing import TYPE_CHECKING, NamedTuple
 
-from based_utils.cli import Lines, clear_lines, refresh_lines, write_lines
+from based_utils.class_utils import Check
+from based_utils.cli import Lines, refresh_lines, write_lines
 from based_utils.data import consume
 from pynput import keyboard
 from pynput.keyboard import Key, KeyCode
@@ -37,11 +38,11 @@ def animate_iter[T](items: Iterator[T], params: AnimParams[T] = None) -> Iterato
     fmt_item, fps, keep_last, loop, only_every_nth, crop = params or AnimParams()
 
     lines: list[object] = []
-    interrupted: list[object] = []
+    interrupted = Check()
 
     def on_release(key: Key | KeyCode | None) -> None:
         if key == Key.esc:
-            interrupted.append(STOP_ANIMATION)
+            interrupted.check()
 
     keyboard.Listener(on_release=on_release, suppress=True).start()
 
@@ -49,7 +50,6 @@ def animate_iter[T](items: Iterator[T], params: AnimParams[T] = None) -> Iterato
         yield item
         if interrupted:
             if loop:
-                clear_lines(len(lines))
                 break
             continue
         if i % only_every_nth > 0:
@@ -61,10 +61,11 @@ def animate_iter[T](items: Iterator[T], params: AnimParams[T] = None) -> Iterato
             formatted = item
         else:
             raise InvalidAnimationItemError(item)
+
         lines = list(formatted)
         refresh_lines(lines, fps=fps, crop_to_terminal=crop)
 
-    if keep_last and not interrupted:
+    if keep_last:
         write_lines(lines, crop_to_terminal=crop)
 
 
