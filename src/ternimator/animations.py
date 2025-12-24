@@ -1,8 +1,9 @@
-from os import get_terminal_size
 from typing import TYPE_CHECKING
 
 from based_utils.math import randf
 from kleur import Color, Colored
+
+from .core import term_size
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
 
 def _fixed_length(anim: Animation, n_frames: int = None) -> Animation:
     if not n_frames:
-        n_frames, _max_height = get_terminal_size()
+        n_frames, _max_height = term_size()
 
     def wrapped_anim(frame_0: Lines, n: int) -> Lines:
         yield from anim(frame_0, n % n_frames)

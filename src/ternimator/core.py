@@ -1,7 +1,7 @@
 from collections.abc import Iterable
-from functools import reduce
+from functools import cache, reduce
 from itertools import count
-from os import get_terminal_size
+from os import get_terminal_size, terminal_size
 from typing import TYPE_CHECKING, NamedTuple
 
 from based_utils.class_utils import Check
@@ -73,13 +73,18 @@ def animate[T](items: Iterator[T], params: AnimParams[T] = None) -> None:
     consume(animate_iter(items, params))
 
 
+@cache
+def term_size() -> terminal_size:
+    return get_terminal_size()
+
+
 def animated_lines(
     lines: Lines | str, *animations: Animation, fill_char: str = " "
 ) -> Iterator[Lines]:
     if isinstance(lines, str):
         lines = lines.splitlines()
 
-    max_width, max_height = get_terminal_size()
+    max_width, max_height = term_size()
     block = list(lines)
     block = block[-min(len(block), max_height - 1) :]
     w = max(len(line) for line in block)
