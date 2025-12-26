@@ -1,16 +1,43 @@
+from functools import reduce
+from itertools import count
 from typing import TYPE_CHECKING
 
+from based_utils.cli import term_size
 from based_utils.math import randf
 from kleur import Color, Colored
 
-from .core import term_size
-
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
     from based_utils.cli import Lines
 
-    from .core import Animation
+
+type Animation = Callable[[Lines, int], Lines]
+
+
+def _frame(n: int) -> Callable[[Lines, Animation], Lines]:
+    def wrapped(f: Lines, anim: Animation) -> Lines:
+        return anim(f, n)
+
+    return wrapped
+
+
+def _frame0(lines: Lines, *, fill_char: str = " ") -> Lines:
+    lines = list(lines)
+    w_block = max(len(line) for line in lines)
+    w_term, _max_height = term_size()
+    for line in lines:
+        yield line.ljust(w_block, fill_char).center(w_term, fill_char)
+
+
+def animated_lines(
+    lines: Lines | str, *animations: Animation, fill_char: str = " "
+) -> Iterator[Lines]:
+    if isinstance(lines, str):
+        lines = lines.splitlines()
+    frame_0 = list(_frame0(lines, fill_char=fill_char))
+    for n in count():
+        yield reduce(_frame(n), animations, frame_0)
 
 
 def _fixed_length(anim: Animation, n_frames: int = None) -> Animation:
