@@ -379,7 +379,7 @@ wheels = [
 
 [[package]]
 name = "ternimator"
-version = "0.0.28"
+version = "0.0.29"
 source = { editable = "." }
 dependencies = [
     { name = "based-utils", extra = ["keyboard"] },
