@@ -41,7 +41,7 @@ def animate_iter[T](items: Iterable[T], params: AnimParams[T] = None) -> Iterato
 
         if keys_pressed[Key.esc]:
             # Could log human_readable_duration(keys_pressed[Key.esc][0]) here,
-            # but for now I don't think it would be worth the potential trouble..
+            # but for now I don't think it would be worth the potential trouble.
             if p.loop:
                 break
             continue

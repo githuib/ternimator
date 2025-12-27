@@ -4,11 +4,10 @@ requires-python = ">=3.14"
 
 [[package]]
 name = "based-utils"
-version = "1.0.13"
+version = "1.0.14"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/30/df/409c04c41f5baf26249f2c741dca1785ac75c8474e9b7dc0541036cc9df1/based_utils-1.0.13.tar.gz", hash = "sha256:7a73764bb666e748c5d44e72d4ea62ed53ecfb5ba8b4d08c88f9604f31afede5", size = 16125, upload-time = "2025-12-26T23:54:40.764Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/36/a56bcb75a3b994a2362087f596ed8b52ad37053a9838511405df437dbcfe/based_utils-1.0.13-py3-none-any.whl", hash = "sha256:63911dd908cef57a17df5100cb4c129147c64484d34f4c211757b92da3b627d1", size = 20824, upload-time = "2025-12-26T23:54:39.183Z" },
+    { url = "https://files.pythonhosted.org/packages/34/41/d4fdbaca6384f72d10892247bf33bf77e69fcc41222ec36ff7bf841f34d4/based_utils-1.0.14-py3-none-any.whl", hash = "sha256:af6e7da7ba3707e1765db4cd964d694bff185cef3bda2e6151e75ee41428edd7", size = 21063, upload-time = "2025-12-27T01:53:59.705Z" },
 ]
 
 [package.optional-dependencies]
