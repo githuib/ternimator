@@ -1,18 +1,14 @@
-import logging
 import time
 from collections.abc import Iterable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from based_utils.cli import clear_lines, human_readable_duration, write_lines
+from based_utils.cli import clear_lines, write_lines
 from based_utils.data import consume
 from based_utils.keyboard import Key, listen_to_keys
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
-
-
-_log = logging.getLogger(__name__)
 
 
 class InvalidAnimationItemError[T](Exception):
@@ -44,8 +40,8 @@ def animate_iter[T](items: Iterable[T], params: AnimParams[T] = None) -> Iterato
         yield item
 
         if keys_pressed[Key.esc]:
-            skipped_after = human_readable_duration(keys_pressed[Key.esc][0])
-            _log.info(f"Animation got skipped after {skipped_after}")
+            # Could log human_readable_duration(keys_pressed[Key.esc][0]) here,
+            # but for now I don't think it would be worth the potential trouble..
             if p.loop:
                 break
             continue
