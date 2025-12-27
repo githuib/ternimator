@@ -6,6 +6,7 @@ requires-python = ">=3.14"
 name = "based-utils"
 version = "1.0.14"
 source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/17/fe/6c14b821238eef5af8f5be21d62c08687304205b9b5f43dd227c6c6bb5a6/based_utils-1.0.14.tar.gz", hash = "sha256:c17c8aa7613592ab825844be5877daadceb2750c0b81fba98c6f8ee0f2bcf378", size = 16342, upload-time = "2025-12-27T01:54:01.055Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/34/41/d4fdbaca6384f72d10892247bf33bf77e69fcc41222ec36ff7bf841f34d4/based_utils-1.0.14-py3-none-any.whl", hash = "sha256:af6e7da7ba3707e1765db4cd964d694bff185cef3bda2e6151e75ee41428edd7", size = 21063, upload-time = "2025-12-27T01:53:59.705Z" },
 ]
@@ -378,7 +379,7 @@ wheels = [
 
 [[package]]
 name = "ternimator"
-version = "0.0.31"
+version = "0.0.32"
 source = { editable = "." }
 dependencies = [
     { name = "based-utils", extra = ["keyboard"] },
